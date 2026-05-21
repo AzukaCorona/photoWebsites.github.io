@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Azuka Corona — Photography Portfolio</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+   
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 
     <style>
         /* ==========================================================================
@@ -51,16 +51,22 @@
         }
 
         /* ==========================================================================
-           2. NAVIGATION BAR
+           2. FIXED NAVIGATION BAR (Transparent Overlay)
            ========================================================================== */
         header {
             position: fixed;
             top: 0;
             width: 100%;
-            background-color: rgba(250, 250, 250, 0.8);
+            background-color: transparent;
+            z-index: 1000;
+            transition: background-color 0.4s ease, backdrop-filter 0.4s ease;
+        }
+
+        header.scrolled {
+            background-color: rgba(250, 250, 250, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .navbar {
@@ -77,8 +83,13 @@
             font-size: 1.5rem;
             font-weight: 400;
             letter-spacing: 0.02em;
-            color: #111111;
+            color: #ffffff;
             text-decoration: none;
+            transition: color 0.4s ease;
+        }
+
+        header.scrolled .logo {
+            color: #111111;
         }
 
         .nav-links {
@@ -89,7 +100,7 @@
 
         .nav-links a {
             text-decoration: none;
-            color: #888888;
+            color: rgba(255, 255, 255, 0.7);
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.12em;
@@ -97,14 +108,75 @@
         }
 
         .nav-links a:hover {
+            color: #ffffff;
+        }
+
+        header.scrolled .nav-links a {
+            color: #888888;
+        }
+
+        header.scrolled .nav-links a:hover {
             color: #111111;
         }
 
         /* ==========================================================================
-           3. LAYOUT & STRUCTURE
+           3. FULLSCREEN HERO SECTION
+           ========================================================================== */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.35)),
+                        url('images/IMG_9552.jpg') no-repeat center center;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .hero-title-wrapper {
+            color: #ffffff;
+            z-index: 10;
+            padding: 0 20px;
+        }
+
+        .hero-title {
+            font-family: "Cormorant Garamond", serif;
+            font-size: 4.5rem;
+            font-weight: 300;
+            letter-spacing: 0.03em;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        .hero-subtitle {
+            font-family: "Inter", sans-serif;
+            font-size: 0.9rem;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: rgba(255, 255, 255, 0.8);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards 0.3s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ==========================================================================
+           4. LAYOUT & STRUCTURE
            ========================================================================== */
         main {
-            margin-top: 140px;
+            margin-top: 0;
         }
 
         .section {
@@ -130,7 +202,7 @@
         }
 
         /* ==========================================================================
-           4. GALLERY SECTION
+           5. GALLERY SECTION
            ========================================================================== */
         .gallery-grid {
             columns: 3 350px;
@@ -158,7 +230,7 @@
         }
 
         /* ==========================================================================
-           5. ABOUT SECTION
+           6. ABOUT SECTION
            ========================================================================== */
         .about-container {
             display: grid;
@@ -171,6 +243,10 @@
             .about-container {
                 grid-template-columns: 450px 1fr;
             }
+        }
+
+        .artist-profile {
+            width: 100%;
         }
 
         .profile-pic {
@@ -215,12 +291,12 @@
             font-family: "Inter", sans-serif;
             color: #111111;
             font-weight: 400;
-            min-width: 80px;
+            min-width: 110px; /* Slight width shift for high contrast alignment */
             display: inline-block;
         }
 
         /* ==========================================================================
-           6. LIGHTBOX WITH SLIDING GALLERY TRANSITIONS
+           7. LIGHTBOX WITH SLIDING GALLERY TRANSITIONS
            ========================================================================== */
         .lightbox {
             position: fixed;
@@ -234,12 +310,16 @@
             justify-content: center;
             align-items: center;
             opacity: 0;
-            pointer-events: none; 
+            pointer-events: none;
             transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1);
             overflow: hidden;
         }
 
-        /* The container holding the image viewport staging */
+        .lightbox.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
         .lightbox-content-wrapper {
             position: relative;
             display: flex;
@@ -248,10 +328,9 @@
             width: 100%;
             height: 100%;
             padding: 0 120px;
-            overflow: hidden; /* Clips elements sliding outside the screen boundary */
+            overflow: hidden;
         }
 
-        /* The image container handles the default pop-in zoom frame logic */
         .lightbox-img-container {
             position: relative;
             width: 100%;
@@ -263,120 +342,89 @@
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* Individual sliding image frames */
+        .lightbox.active .lightbox-img-container {
+            transform: scale(1);
+        }
+
         .lightbox-img {
             position: absolute;
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
             box-shadow: 0 30px 90px rgba(0, 0, 0, 0.04);
-            
-            /* Fluid base animation timing setups */
             opacity: 1;
             transform: translateX(0);
             transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.55s ease;
         }
 
-        /* Staging Classes for Slide Directions managed by JS */
         .slide-out-left {
-            transform: translateX(-150px);
-            opacity: 0;
+            transform: translateX(-150%) !important;
+            opacity: 0 !important;
         }
 
         .slide-out-right {
-            transform: translateX(150px);
+            transform: translateX(150%) !important;
+            opacity: 0 !important;
+        }
+
+        .slide-in-left {
+            transform: translateX(-150%);
             opacity: 0;
         }
 
         .slide-in-right {
-            transform: translateX(150px);
+            transform: translateX(150%);
             opacity: 0;
         }
 
-        .slide-in-left {
-            transform: translateX(-150px);
-            opacity: 0;
-        }
-
-        /* Structural Overlay Active Triggers */
-        .lightbox.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .lightbox.active .lightbox-img-container {
-            transform: scale(1);
-        }
-
-        /* Control UI Elements */
         .lightbox-close {
             position: absolute;
             top: 40px;
             right: 60px;
-            color: #111111;
-            font-size: 2rem;
-            font-weight: 200;
-            cursor: pointer;
-            z-index: 2100;
-            transition: opacity 0.2s ease;
-        }
-
-        .lightbox-counter {
-            position: absolute;
-            bottom: 40px;
-            left: 60px;
+            background: none;
+            border: none;
             font-family: "Inter", sans-serif;
             font-size: 0.8rem;
-            letter-spacing: 0.1em;
-            color: #777777;
-            z-index: 2100;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #888888;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            z-index: 2010;
         }
 
-        .lightbox-arrow {
+        .lightbox-close:hover {
+            color: #111111;
+        }
+
+        .lightbox-btn {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
-            color: #111111;
+            font-family: "Cormorant Garamond", serif;
             font-size: 2.5rem;
-            font-weight: 100;
+            font-weight: 300;
+            color: #888888;
             cursor: pointer;
             padding: 20px;
-            z-index: 2100;
-            transition: opacity 0.2s ease, transform 0.2s ease;
+            transition: color 0.3s ease;
+            z-index: 2010;
+            user-select: none;
         }
 
-        .lightbox-arrow:hover { opacity: 0.4; }
-        .lightbox-arrow-left { left: 40px; }
-        .lightbox-arrow-left:hover { transform: translateY(-50%) translateX(-4px); }
-        .lightbox-arrow-right { right: 40px; }
-        .lightbox-arrow-right:hover { transform: translateY(-50%) translateX(4px); }
-        .lightbox-close:hover { opacity: 0.4; }
-
-        @media (max-width: 768px) {
-            .lightbox-content-wrapper { padding: 0 20px; }
-            .lightbox-arrow { display: none; }
+        .lightbox-btn:hover {
+            color: #111111;
         }
 
-        /* ==========================================================================
-           7. FOOTER
-           ========================================================================== */
-        footer {
-            text-align: center;
-            padding: 80px 20px;
-            font-size: 0.75rem;
-            color: #999999;
-            border-top: 1px solid #e5e5e5;
-            margin-top: 100px;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-        }
+        .lightbox-prev { left: 40px; }
+        .lightbox-next { right: 40px; }
     </style>
 </head>
 <body>
 
-    <header>
+    <header id="main-header">
         <nav class="navbar">
             <a href="#" class="logo">Azuka Corona</a>
             <ul class="nav-links">
@@ -386,192 +434,187 @@
         </nav>
     </header>
 
+    <!-- FULLSCREEN HERO SECTION -->
+    <div class="hero">
+        <div class="hero-title-wrapper">
+            <h1 class="hero-title">Azuka Corona</h1>
+            <p class="hero-subtitle">Photography Portfolio</p>
+        </div>
+    </div>
+
     <main>
+        <!-- GALLERY SECTION -->
         <section id="gallery" class="section">
             <h2>Selected Works</h2>
-            <p class="subtitle">Photos.</p>
-            
+            <div class="subtitle">Visual narratives across light and architecture.</div>
+           
             <div class="gallery-grid">
-                <div class="gallery-item" data-index="19"><img src="IMG_9552.jpg" alt="Sequence 20"></div>
-                <div class="gallery-item" data-index="13"><img src="IMG_0032.jpg" alt="Sequence 14"></div>
-                <div class="gallery-item" data-index="7"><img src="IMG_0019.jpg" alt="Sequence 08"></div>
-                <div class="gallery-item" data-index="6"><img src="IMG_0153.jpg" alt="Sequence 07"></div>
-                <div class="gallery-item" data-index="5"><img src="IMG_0066.jpg" alt="Sequence 06"></div>
-                <div class="gallery-item" data-index="0"><img src="IMG_0011.jpg" alt="Sequence 01"></div>
-                <div class="gallery-item" data-index="1"><img src="IMG_0344.jpg" alt="Sequence 02"></div>
-                <div class="gallery-item" data-index="9"><img src="IMG_9633.jpg" alt="Sequence 10"></div>
-                <div class="gallery-item" data-index="10"><img src="IMG_0177.jpg" alt="Sequence 11"></div>
-                <div class="gallery-item" data-index="2"><img src="IMG_0361.jpg" alt="Sequence 03"></div>
-                <div class="gallery-item" data-index="11"><img src="IMG_0023.jpg" alt="Sequence 12"></div>
-                <div class="gallery-item" data-index="3"><img src="IMG_0125.jpg" alt="Sequence 04"></div>
-                <div class="gallery-item" data-index="14"><img src="IMG_0026.jpg" alt="Sequence 15"></div>
-                <div class="gallery-item" data-index="16"><img src="IMG_9591.jpg" alt="Sequence 17"></div>
-                <div class="gallery-item" data-index="18"><img src="IMG_9658.jpg" alt="Sequence 19"></div>
-                <div class="gallery-item" data-index="12"><img src="IMG_0050.jpg" alt="Sequence 13"></div>
-                <div class="gallery-item" data-index="8"><img src="IMG_0014.jpg" alt="Sequence 09"></div>
-                <div class="gallery-item" data-index="4"><img src="IMG_9939.jpg" alt="Sequence 05"></div>
-                <div class="gallery-item" data-index="15"><img src="IMG_5599.jpg" alt="Sequence 16"></div>
-                <div class="gallery-item" data-index="17"><img src="IMG_9920.jpg" alt="Sequence 18"></div>
+                <div class="gallery-item" data-index="19"><img src="images/IMG_9552.jpg" alt="Sequence 20"></div>
+                <div class="gallery-item" data-index="13"><img src="images/IMG_0032.jpg" alt="Sequence 14"></div>
+                <div class="gallery-item" data-index="7"><img src="images/IMG_0019.jpg" alt="Sequence 08"></div>
+                <div class="gallery-item" data-index="6"><img src="images/IMG_0153.jpg" alt="Sequence 07"></div>
+                <div class="gallery-item" data-index="5"><img src="images/IMG_0066.jpg" alt="Sequence 06"></div>
+                <div class="gallery-item" data-index="0"><img src="images/IMG_0011.jpg" alt="Sequence 01"></div>
+                <div class="gallery-item" data-index="1"><img src="images/IMG_0344.jpg" alt="Sequence 02"></div>
+                <div class="gallery-item" data-index="9"><img src="images/IMG_9633.jpg" alt="Sequence 10"></div>
+                <div class="gallery-item" data-index="10"><img src="images/IMG_0177.jpg" alt="Sequence 11"></div>
+                <div class="gallery-item" data-index="2"><img src="images/IMG_0361.jpg" alt="Sequence 03"></div>
+                <div class="gallery-item" data-index="11"><img src="images/IMG_0023.jpg" alt="Sequence 12"></div>
+                <div class="gallery-item" data-index="3"><img src="images/IMG_0125.jpg" alt="Sequence 04"></div>
+                <div class="gallery-item" data-index="14"><img src="images/IMG_0026.jpg" alt="Sequence 15"></div>
+                <div class="gallery-item" data-index="16"><img src="images/IMG_9591.jpg" alt="Sequence 17"></div>
+                <div class="gallery-item" data-index="18"><img src="images/IMG_9658.jpg" alt="Sequence 19"></div>
+                <div class="gallery-item" data-index="12"><img src="images/IMG_0050.jpg" alt="Sequence 13"></div>
+                <div class="gallery-item" data-index="8"><img src="images/IMG_0014.jpg" alt="Sequence 09"></div>
+                <div class="gallery-item" data-index="4"><img src="images/IMG_9939.jpg" alt="Sequence 05"></div>
+                <div class="gallery-item" data-index="15"><img src="images/IMG_5599.jpg" alt="Sequence 16"></div>
+                <div class="gallery-item" data-index="17"><img src="images/IMG_9920.jpg" alt="Sequence 18"></div>
             </div>
         </section>
 
         <hr class="divider">
 
+        <!-- ABOUT SECTION -->
         <section id="about" class="section">
-            <h2>About</h2>
+            <h2>About the Artist</h2>
+            <div class="subtitle">A brief overview of background and artistic intent.</div>
+           
             <div class="about-container">
                 <div class="artist-profile">
-                    <img src="IMG_5817.jpg" alt="Azuka Corona portrait" class="profile-pic">
+                    <img src="images/IMG_5817.jpg" alt="Azuka Corona portrait" class="profile-pic">
                 </div>
                 <div class="artist-text">
                     <h3>Artist Statement</h3>
-                    <p>In his art, Azuka Corona captures light over time to turn pictures into a medium of art more similar to painting. With the use of longer exposure times, it is possible to essentially print certain images onto the screen in any place within frame. Azuka utilizes this ability to make possible things normally seen as impossible such as the duplication of a person or the appearance of a person in a place they never were. The opposite of this type of photography completely stills the frame only showing exactly what exists in the moment the photo was taken. This can be used to capture light as it was in a specific moment. Azuka uses this more standard type of photography when capturing photos of people outside around him to get a brief snapshot into people’s lives. The exploration of different ways to use photography, in both aspects of painting a photo, and taking an exact snapshot of the world, as well as the many other applications is what inspires Azuka to take his photos.
-</p>
+                    <p>In his art, Azuka Corona captures light over time to turn pictures into a medium of art more similar to painting. With the use of longer exposure times, it is possible to essentially print certain images onto the screen in any place within frame. Azuka utilizes this ability to make possible things normally seen as impossible such as the duplication of a person or the appearance of a person in a place they never were. The opposite of this type of photography completely stills the frame only showing exactly what exists in the moment the photo was taken. This can be used to capture light as it was in a specific moment. Azuka uses this more standard type of photography when capturing photos of people outside around him to get a brief snapshot into people’s lives. The exploration of different ways to use photography, in both aspects of painting a photo, and taking an exact snapshot of the world, as well as the many other applications is what inspires Azuka to take his photos.</p>
+                   
                     <h3>Artist Bio</h3>
-                    <p>Azuka is extremely interested in the technical aspects of photography and the possibilities for the use of movement, combined with possible camera modifications and movements to create either an artistic vision or a document of the world. Having been extremely invested in the scientific worlds of chemistry and biology, documenting the world through both the lens of people and objects is an integral part of Azuka’s photography. On the other side of photography, having taken many visual arts classes throughout his life Azuka also likes to express his creativity through his experimental use of camera features to create unique photos which can more readily express his imaginative thoughts in the way that paintings, drawings, and sculptures can. The dichotomy between these two artistic inspirations results in the diverse set of photos shown in his portfolio.
-</p>
+                    <p>Azuka is extremely interested in the technical aspects of photography and the possibilities for the use of movement, combined with possible camera modifications and movements to create either an artistic vision or a document of the world. Having been extremely invested in the scientific worlds of chemistry and biology, documenting the world through both the lens of people and objects is an integral part of Azuka’s photography. On the other side of photography, having taken many visual arts classes throughout his life Azuka also likes to express his creativity through his experimental use of camera features to create unique photos which can more readily express his imaginative thoughts in the way that paintings, drawings, and sculptures can. The dichotomy between these two artistic inspirations results in the diverse set of photos shown in his portfolio.</p>
+                   
                     <h3>Education</h3>
                     <ul class="cv-list">
-                        <li><strong>2025-2026</strong> — <em>Class</em>, Photography 200, Success Academy High School of Liberal Arts - Manhattan.</li>
-                        <li><strong>2023-2024</strong> — <em>Class</em>, Photography 301, Success Academy High School of Liberal Arts - Manhattan.</li>
+                        <li><strong>2025-2026</strong> — Photography 200, Success Academy High School of Liberal Arts - Manhattan.</li>
+                        <li><strong>2023-2024</strong> — Photography 301, Success Academy High School of Liberal Arts - Manhattan.</li>
                     </ul>
                 </div>
             </div>
         </section>
     </main>
 
-    <div id="lightbox" class="lightbox">
-        <span class="lightbox-close" id="lightbox-close">&times;</span>
-        <div class="lightbox-counter" id="lightbox-counter">01 / 20</div>
-        
+    <!-- LIGHTBOX SLIDING POPUP -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightbox-close">Close</button>
+        <button class="lightbox-btn lightbox-prev" id="lightbox-prev">&#8249;</button>
+       
         <div class="lightbox-content-wrapper">
-            <button class="lightbox-arrow lightbox-arrow-left" id="lightbox-prev">&#8592;</button>
-            
-            <div class="lightbox-img-container" id="img-container">
-                </div>
-            
-            <button class="lightbox-arrow lightbox-arrow-right" id="lightbox-next">&#8594;</button>
+            <div class="lightbox-img-container" id="img-container"></div>
         </div>
+       
+        <button class="lightbox-btn lightbox-next" id="lightbox-next">&#8250;</button>
     </div>
 
-    <footer>
-        <p>2025, 2026 Azuka Corona.</p>
-    </footer>
-
+    <!-- ==========================================================================
+       8. JAVASCRIPT ENGINE
+       ========================================================================== */ -->
     <script>
-        const items = document.querySelectorAll('.gallery-item');
-        const images = Array.from(document.querySelectorAll('.gallery-grid img'));
-        const lightbox = document.getElementById('lightbox');
-        const imgContainer = document.getElementById('img-container');
-        const lightboxClose = document.getElementById('lightbox-close');
-        const lightboxCounter = document.getElementById('lightbox-counter');
-        const btnPrev = document.getElementById('lightbox-prev');
-        const btnNext = document.getElementById('lightbox-next');
-        
-        let currentIndex = 0;
-        let isAnimating = false; // Flag to prevent rapid clicks from breaking the transition pipeline
+        document.addEventListener('DOMContentLoaded', () => {
+            const header = document.getElementById('main-header');
+            const galleryItems = document.querySelectorAll('.gallery-item img');
+            const lightbox = document.getElementById('lightbox');
+            const imgContainer = document.getElementById('img-container');
+            const closeBtn = document.getElementById('lightbox-close');
+            const prevBtn = document.getElementById('lightbox-prev');
+            const nextBtn = document.getElementById('lightbox-next');
+           
+            let currentIndex = 0;
+            let isAnimating = false;
 
-        // Helper to setup number strings gracefully
-        function updateCounter(index) {
-            const displayNum = String(index + 1).padStart(2, '0');
-            const totalNum = String(images.length).padStart(2, '0');
-            lightboxCounter.textContent = `${displayNum} / ${totalNum}`;
-        }
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > window.innerHeight - 100) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+           
+            const imagesArray = Array.from(galleryItems).map(img => ({
+                src: img.src,
+                alt: img.alt
+            }));
 
-        // Creates a clean image element styled for our lightbox
-        function createLightboxImage(imgElement) {
-            const el = document.createElement('img');
-            el.className = 'lightbox-img';
-            el.src = imgElement.src;
-            el.alt = imgElement.alt;
-            return el;
-        }
-
-        // Handles initial lightbox opening
-        items.forEach((item, index) => {
-            item.addEventListener('click', () => {
+            function openLightbox(index) {
                 currentIndex = index;
-                imgContainer.innerHTML = ''; // Wipe out any lingering elements
-                
-                const initialImg = createLightboxImage(images[currentIndex]);
-                imgContainer.appendChild(initialImg);
-                
-                updateCounter(currentIndex);
+                imgContainer.innerHTML = '';
+               
+                const newImg = document.createElement('img');
+                newImg.src = imagesArray[currentIndex].src;
+                newImg.alt = imagesArray[currentIndex].alt;
+                newImg.className = 'lightbox-img';
+               
+                imgContainer.appendChild(newImg);
                 lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeLightbox() {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = '';
+                setTimeout(() => { imgContainer.innerHTML = ''; }, 500);
+            }
+
+            function navigateGallery(direction) {
+                if (isAnimating) return;
+                isAnimating = true;
+
+                let nextIndex = currentIndex + direction;
+                if (nextIndex >= imagesArray.length) nextIndex = 0;
+                if (nextIndex < 0) nextIndex = imagesArray.length - 1;
+
+                const currentImg = imgContainer.querySelector('.lightbox-img');
+               
+                const upcomingImg = document.createElement('img');
+                upcomingImg.src = imagesArray[nextIndex].src;
+                upcomingImg.alt = imagesArray[nextIndex].alt;
+               
+                if (direction === 1) {
+                    upcomingImg.className = 'lightbox-img slide-in-right';
+                    currentImg.classList.add('slide-out-left');
+                } else {
+                    upcomingImg.className = 'lightbox-img slide-in-left';
+                    currentImg.classList.add('slide-out-right');
+                }
+
+                imgContainer.appendChild(upcomingImg);
+                upcomingImg.getBoundingClientRect();
+                upcomingImg.classList.remove('slide-in-right', 'slide-in-left');
+
+                setTimeout(() => {
+                    if (currentImg) currentImg.remove();
+                    currentIndex = nextIndex;
+                    isAnimating = false;
+                }, 550);
+            }
+
+            galleryItems.forEach((item, index) => {
+                item.parentElement.addEventListener('click', () => openLightbox(index));
+            });
+
+            closeBtn.addEventListener('click', closeLightbox);
+            nextBtn.addEventListener('click', () => navigateGallery(1));
+            prevBtn.addEventListener('click', () => navigateGallery(-1));
+
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox || e.target.classList.contains('lightbox-content-wrapper')) {
+                    closeLightbox();
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (!lightbox.classList.contains('active')) return;
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowRight') navigateGallery(1);
+                if (e.key === 'ArrowLeft') navigateGallery(-1);
             });
         });
-
-        function switchImage(direction) {
-            if (isAnimating) return;
-            isAnimating = true;
-
-            let targetIndex;
-            if (direction === 'next') {
-                targetIndex = (currentIndex + 1) % images.length;
-            } else {
-                targetIndex = (currentIndex - 1 + images.length) % images.length;
-            }
-
-            const currentImgElement = imgContainer.querySelector('.lightbox-img');
-            const nextImgElement = createLightboxImage(images[targetIndex]);
-
-            // Phase Stage 1: Setup entrance configurations based on direction paths
-            if (direction === 'next') {
-                nextImgElement.classList.add('slide-in-right');
-            } else {
-                nextImgElement.classList.add('slide-in-left');
-            }
-
-            imgContainer.appendChild(nextImgElement);
-
-            // Phase Stage 2: Force reflow layout refresh so the browser registers the entry states properly
-            nextImgElement.getBoundingClientRect();
-
-            // Phase Stage 3: Trigger transitions simultaneously 
-            if (direction === 'next') {
-                currentImgElement.classList.add('slide-out-left');
-            } else {
-                currentImgElement.classList.add('slide-out-right');
-            }
-            nextImgElement.classList.remove('slide-in-right', 'slide-in-left');
-
-            // Update indices data states mid flight
-            currentIndex = targetIndex;
-            updateCounter(currentIndex);
-
-            // Phase Stage 4: Clean old image references out when transition ends
-            setTimeout(() => {
-                if (currentImgElement.parentNode === imgContainer) {
-                    imgContainer.removeChild(currentImgElement);
-                }
-                isAnimating = false;
-            }, 550); // Matches the 0.55s CSS transition speed perfectly
-        }
-
-        function closeLightbox() {
-            lightbox.classList.remove('active');
-            setTimeout(() => {
-                imgContainer.innerHTML = ''; // Safely drop DOM elements out when closed
-            }, 500);
-        }
-
-        lightboxClose.addEventListener('click', closeLightbox);
-        btnNext.addEventListener('click', (e) => { e.stopPropagation(); switchImage('next'); });
-        btnPrev.addEventListener('click', (e) => { e.stopPropagation(); switchImage('prev'); });
-
-        lightbox.addEventListener('click', (e) => {
-            if (e.target === lightbox || e.target.classList.contains('lightbox-content-wrapper')) {
-                closeLightbox();
-            }
-        });
-        
-        document.addEventListener('keydown', (e) => {
-            if (!lightbox.classList.contains('active')) return;
-            if (e.key === 'Escape') closeLightbox();
-            if (e.key === 'ArrowRight') switchImage('next');
-            if (e.key === 'ArrowLeft') switchImage('prev');
-        });
     </script>
-
 </body>
 </html>
